@@ -332,7 +332,8 @@ import {
   getBlobApi,
   putApi,
   deleteApi,
-  excelDownloadApi
+  excelDownloadApi,
+  getWebSocketUrl
 } from '@/utils/api'
 import { showPremiumUpgradeConfirm } from '@/utils/subscription.js'
 
@@ -1024,16 +1025,9 @@ export default {
     },
 
     connectAnalyzeWebSocket() {
-      const protocol =
-        window.location.protocol === 'https:'
-          ? 'wss://'
-          : 'ws://'
-
       this.analyzeWebSocket =
         new WebSocket(
-          protocol
-          + window.location.host
-          + '/ws/stats'
+          getWebSocketUrl('/ws/stats')
         )
 
       this.analyzeWebSocket.onmessage =

@@ -1,5 +1,45 @@
 import axios from 'axios'
 
+const trimTrailingSlash = (value = '') => (
+    String(value).trim().replace(/\/+$/, '')
+)
+
+const API_BASE_URL =
+    trimTrailingSlash(import.meta.env.VITE_API_BASE_URL || '')
+
+const WS_BASE_URL =
+    trimTrailingSlash(import.meta.env.VITE_WS_BASE_URL || '')
+
+const apiClient = axios.create({
+    baseURL: API_BASE_URL
+})
+
+export const getApiBaseUrl = () => API_BASE_URL
+
+export const getWebSocketUrl = (path) => {
+    const normalizedPath =
+        String(path || '').startsWith('/')
+            ? path
+            : '/' + path
+
+    if (WS_BASE_URL) {
+        return WS_BASE_URL + normalizedPath
+    }
+
+    if (API_BASE_URL) {
+        const apiUrl = new URL(API_BASE_URL)
+        const protocol = apiUrl.protocol === 'https:' ? 'wss:' : 'ws:'
+        return protocol + '//' + apiUrl.host + normalizedPath
+    }
+
+    const protocol =
+        window.location.protocol === 'https:'
+            ? 'wss://'
+            : 'ws://'
+
+    return protocol + window.location.host + normalizedPath
+}
+
 const getAuthHeaders = () => {
     const authText =
         localStorage.getItem('aiVoiceAuth')
@@ -29,7 +69,7 @@ export const getApi = async (
     params = {}
 ) => {
     try {
-        const response = await axios.get(
+        const response = await apiClient.get(
             url,
             {
                 params: params,
@@ -56,7 +96,7 @@ export const getApi = async (
  */
 export const postApi = async (url, data = {}) => {
     try {
-      const res = await axios.post(
+      const res = await apiClient.post(
         url,
         data,
         {
@@ -96,7 +136,7 @@ export const postMultiApi = async (
             formData.append('file', file)
         }
 
-        await axios.post(url, formData, {
+        await apiClient.post(url, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 ...getAuthHeaders()
@@ -121,7 +161,7 @@ export const excelDownloadApi = async (
     options = {}
 ) => {
     try {
-        const response = await axios.post(
+        const response = await apiClient.post(
             url,
             params,
             {
@@ -169,7 +209,7 @@ export const deleteApi = async (
     params = {}
 ) => {
     try {
-        const response = await axios.delete(
+        const response = await apiClient.delete(
             url,
             {
                 params: params,
@@ -198,7 +238,7 @@ export const getBlobApi = async (
     params = {}
 ) => {
     try {
-        const response = await axios.get(
+        const response = await apiClient.get(
             url,
             {
                 params: params,
@@ -229,7 +269,7 @@ export const putApi = async (
     data = {}
 ) => {
     try {
-        const response = await axios.put(
+        const response = await apiClient.put(
             url,
             data,
             {
