@@ -1,0 +1,956 @@
+.container {
+    min-height: 100vh;
+    background: linear-gradient(135deg,
+            #f7fff9,
+            #dff7e9);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+.container-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.card {
+    width: 100%;
+    max-width: 900px;
+    background: white;
+    border-radius: 18px;
+    padding: 35px;
+    box-sizing: border-box;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #123524;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.empty {
+    text-align: center;
+    margin-top: 20px;
+    color: #888;
+    font-size: 16px;
+}
+
+.image-link {
+    color: #03c75a;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.image-link:hover {
+    text-decoration: underline;
+}
+
+.table-wrapper {
+
+    width: 100%;
+
+    max-width: 100%;
+
+    overflow-x: auto;
+
+    overflow-y: hidden;
+
+    -webkit-overflow-scrolling: touch;
+
+    box-sizing: border-box;
+}
+
+.user-table {
+
+    width: 100%;
+
+    min-width: 900px;
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+    background: white;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    table-layout: auto;
+}
+
+/* 테이블 헤더 */
+.user-table thead {
+
+    background: #0b7a3b;
+
+    color: white;
+}
+
+/* 헤더 셀 */
+.user-table th {
+
+    padding: 16px;
+
+    text-align: center;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+/* 데이터 셀 */
+.user-table td {
+    padding: 14px;
+    text-align: center;
+    font-size: 14px;
+    border-bottom: 1px solid #d8efe2;
+    white-space: nowrap;
+}
+
+/* hover */
+.user-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.user-table tbody tr:hover {
+    background: #f1fbf6;
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+    .table-wrapper {
+        border-radius: 12px;
+    }
+    .user-table {
+        min-width: 700px;
+    }
+    .user-table th,
+    .user-table td {
+        padding: 12px 14px;
+        font-size: 13px;
+    }
+}
+
+/* textarea */
+.message-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cfe8da;
+    border-radius: 10px;
+    resize: none;
+    box-sizing: border-box;
+    background: #f8fffb;
+    font-family: inherit;
+}
+
+/* jsonbox */
+json-box {
+    background: #1e1e1e;
+    color: #00ff9d;
+    padding: 15px;
+    border-radius: 8px;
+    overflow: auto;
+    font-size: 12px;
+}
+
+/* 숨김 */
+.hidden {
+  display: none;
+}
+
+/* ============================= */
+/* 프로그래스바 */
+/* ============================= */
+
+/* 로딩 오버레이 */
+.loading-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.35);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    z-index: 99999;
+
+    backdrop-filter: blur(2px);
+}
+
+/* 로딩 박스 */
+.loading-box {
+
+    width: 220px;
+
+    padding: 28px;
+
+    border-radius: 18px;
+
+    background: white;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 18px;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* 스피너 */
+.spinner {
+
+    width: 52px;
+
+    height: 52px;
+
+    border: 5px solid #e5e7eb;
+
+    border-top-color: #03c75a;
+
+    border-radius: 50%;
+
+    animation: spin 0.8s linear infinite;
+}
+
+/* 텍스트 */
+.loading-text {
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    color: #174331;
+}
+
+/* 애니메이션 */
+@keyframes spin {
+
+    to {
+
+        transform: rotate(360deg);
+    }
+}
+
+.swal2-container {
+    z-index: 30000 !important;
+}
+/* ============================= */
+
+/* =========================================================
+   Mobile App UI Override
+   - 사용자 앱 전용 360px ~ 768px 최적화
+   - 기존 HTML 구조 변경 없이 앱형 레이아웃으로 보정
+   ========================================================= */
+:root {
+    --app-bg: #f4f8f6;
+    --app-surface: #ffffff;
+    --app-surface-soft: #f8fffb;
+    --app-line: #d8efe2;
+    --app-line-strong: #b9e5ca;
+    --app-primary: #03c75a;
+    --app-primary-dark: #0b7a3b;
+    --app-menu-accent: #5c7c89;
+    --app-menu-accent-dark: #3f6370;
+    --app-text: #123524;
+    --app-muted: #6a8f79;
+    --app-danger: #ef4444;
+    --app-shadow: 0 10px 28px rgba(18, 53, 36, 0.08);
+    --app-radius: 14px;
+    --app-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* 사용자 앱 전용 배포에서는 탑메뉴를 사용하지 않는다. */
+.header {
+    display: none !important;
+}
+
+.account-bar,
+.footer {
+    flex: 0 0 auto;
+}
+
+html,
+body,
+#app {
+    width: 100%;
+    min-width: 320px;
+    height: 100%;
+    min-height: 100%;
+    margin: 0;
+    overflow: hidden;
+    color: var(--app-text);
+    background: var(--app-bg);
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Noto Sans KR",
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+button,
+[role="button"],
+select,
+input[type="button"],
+input[type="submit"] {
+    min-height: 44px;
+    touch-action: manipulation;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+    min-height: 44px;
+    font-size: max(14px, 1rem);
+}
+
+.app-page-title {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.app-page-kicker {
+    margin: 0 0 8px;
+    color: var(--app-primary);
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+}
+
+.app-page-title h1 {
+    margin: 0;
+    color: var(--app-text);
+    font-size: 30px;
+    line-height: 1.2;
+}
+
+.app-page-subtitle {
+    color: var(--app-muted);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    html,
+    body {
+        height: 100%;
+        overflow: hidden;
+        background: var(--app-bg);
+    }
+
+    .layout {
+        height: 100dvh !important;
+        min-height: 100dvh !important;
+        overflow: hidden !important;
+        background: var(--app-bg) !important;
+    }
+
+    .body {
+        display: flex !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .content {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        padding: 12px 12px 12px !important;
+        margin: 0 !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        background: var(--app-bg) !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .container,
+    .container-vertical {
+        min-height: auto !important;
+        padding: 0 !important;
+        background: transparent !important;
+        gap: 12px !important;
+    }
+
+    .card,
+    .home-page .card {
+        width: 100% !important;
+        max-width: none !important;
+        padding: 18px !important;
+        border: 1px solid var(--app-line) !important;
+        border-radius: var(--app-radius) !important;
+        box-shadow: var(--app-shadow) !important;
+    }
+
+    .title,
+    .app-page-title h1,
+    .template-header h1,
+    .code-header h1,
+    .user-manage-header h1 {
+        margin-bottom: 16px !important;
+        font-size: 22px !important;
+        line-height: 1.25 !important;
+        letter-spacing: 0 !important;
+        text-align: left !important;
+    }
+
+    .app-page-title,
+    .template-header,
+    .code-header,
+    .user-manage-header {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 7px !important;
+        margin-bottom: 18px !important;
+        padding-bottom: 14px !important;
+        border-bottom: 1px solid var(--app-line) !important;
+    }
+
+    .app-page-kicker {
+        margin: 0 0 6px !important;
+        color: var(--app-primary) !important;
+        font-size: 12px !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.06em !important;
+    }
+
+    .app-page-title h1,
+    .template-header h1,
+    .code-header h1,
+    .user-manage-header h1 {
+        margin: 0 !important;
+    }
+
+    .app-page-subtitle {
+        display: block !important;
+        color: var(--app-muted) !important;
+        font-size: 14px !important;
+        line-height: 1.45 !important;
+        word-break: keep-all !important;
+    }
+
+    .empty,
+    .home-list-state,
+    .analyze-empty-result {
+        font-size: 14px !important;
+        line-height: 1.5 !important;
+    }
+
+    /* 앱형 사이드 메뉴 */
+    .sidebar-toggle {
+        left: 16px !important;
+        right: auto !important;
+        bottom: calc(68px + var(--app-safe-bottom)) !important;
+        width: 54px !important;
+        height: 54px !important;
+        border-radius: 20px !important;
+        background: linear-gradient(135deg, var(--app-menu-accent), var(--app-menu-accent-dark)) !important;
+        color: #fff !important;
+        box-shadow: 0 14px 30px rgba(63, 99, 112, 0.28) !important;
+        z-index: 10001 !important;
+    }
+
+    .sidebar {
+        top: auto !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: min(82dvh, 620px) !important;
+        min-height: 0 !important;
+        padding: 64px 14px calc(20px + var(--app-safe-bottom)) !important;
+        overflow-y: auto !important;
+        border: 0 !important;
+        border-radius: 24px 24px 0 0 !important;
+        background: #ffffff !important;
+        box-shadow: 0 -18px 44px rgba(15, 23, 42, 0.22) !important;
+        transform: translateY(110%) !important;
+    }
+
+    .sidebar.open {
+        transform: translateY(0) !important;
+    }
+
+    .sidebar-overlay {
+        background: rgba(15, 23, 42, 0.42) !important;
+        backdrop-filter: blur(5px) !important;
+    }
+
+    .sidebar-menu {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+    }
+
+    .menu-item {
+        min-height: 64px !important;
+        padding: 14px !important;
+        gap: 10px !important;
+        border-radius: 16px !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    .menu-item:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .menu-icon {
+        width: 28px !important;
+        font-size: 22px !important;
+    }
+
+    .menu-text {
+        min-width: 0 !important;
+        font-size: 14px !important;
+        line-height: 1.25 !important;
+        word-break: keep-all !important;
+    }
+
+    .tooltip {
+        display: none !important;
+    }
+
+    /* 사용자 앱에서는 관리자 메뉴를 숨김 */
+    .sidebar-menu a[href="/codeManage"],
+    .sidebar-menu a[href="/templateManage"],
+    .sidebar-menu a[href="/userManage"] {
+        display: none !important;
+    }
+
+    /* 버튼/입력 공통 터치 영역 */
+    .load-btn,
+    .confirm-btn,
+    .cancel-btn,
+    .upload-btn,
+    .delete-image-btn,
+    .copy-btn,
+    .analyze-action-btn,
+    .delete-action-btn,
+    .complete-btn,
+    .calendar-nav-btn,
+    .calendar-title-button,
+    .month-picker-actions button,
+    .inquiry-submit-btn,
+    .inquiry-close-btn {
+        min-height: 44px !important;
+        border-radius: 12px !important;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+    }
+
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea,
+    .home-search-field input,
+    .home-search-field select,
+    .detail-select,
+    .form-group input {
+        min-height: 46px !important;
+        border-radius: 12px !important;
+        font-size: 16px !important;
+    }
+
+    textarea {
+        line-height: 1.55 !important;
+    }
+
+    /* 대시보드 */
+    .home-search-panel {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .home-search-field:first-child,
+    .home-search-actions {
+        grid-column: 1 / -1 !important;
+    }
+
+    .home-search-field label {
+        margin-bottom: 6px !important;
+        font-size: 13px !important;
+    }
+
+    .home-search-actions .load-btn {
+        width: 100% !important;
+    }
+
+    .table-wrapper,
+    .home-page .table-wrapper,
+    .code-table-wrap,
+    .user-table-wrap {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        border-radius: 14px !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .user-table,
+    .home-user-table,
+    .code-table {
+        min-width: 640px !important;
+        border-radius: 14px !important;
+        box-shadow: none !important;
+    }
+
+    .user-table th,
+    .user-table td,
+    .home-user-table th,
+    .home-user-table td,
+    .code-table th,
+    .code-table td {
+        padding: 12px 10px !important;
+        font-size: 14px !important;
+        line-height: 1.35 !important;
+    }
+
+    .analyze-action-btn,
+    .delete-action-btn {
+        min-width: 72px !important;
+        padding: 0 12px !important;
+    }
+
+    .analyze-menu {
+        width: min(180px, calc(100vw - 24px)) !important;
+        border-radius: 14px !important;
+    }
+
+    .analyze-menu-item {
+        min-height: 46px !important;
+        padding: 12px 14px !important;
+        font-size: 14px !important;
+    }
+
+    .detail-meta-grid,
+    .detail-action-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .detail-action-row {
+        display: grid !important;
+        gap: 8px !important;
+        margin: 0 0 16px !important;
+    }
+
+    .detail-action-row button {
+        width: 100% !important;
+    }
+
+    /* 회의 수집 캘린더 */
+    .calendar-container {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 16px !important;
+        border-radius: var(--app-radius) !important;
+        box-shadow: var(--app-shadow) !important;
+    }
+
+    .calendar-header {
+        display: grid !important;
+        grid-template-columns: 48px 1fr 48px !important;
+        align-items: center !important;
+        gap: 8px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .calendar-nav-btn {
+        width: 48px !important;
+        min-width: 48px !important;
+        padding: 0 !important;
+        font-size: 0 !important;
+    }
+
+    .calendar-nav-icon {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 24px !important;
+    }
+
+    .calendar-title-button {
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 48px !important;
+        padding: 0 10px !important;
+        font-size: 19px !important;
+    }
+
+    .month-picker-panel {
+        position: fixed !important;
+        right: 12px !important;
+        left: 12px !important;
+        top: 76px !important;
+        width: auto !important;
+        transform: none !important;
+        z-index: 2000 !important;
+    }
+
+    .month-picker-fields select {
+        min-height: 44px !important;
+        font-size: 15px !important;
+    }
+
+    .calendar th {
+        height: 34px !important;
+        font-size: 12px !important;
+    }
+
+    .calendar td {
+        height: 56px !important;
+        padding: 2px !important;
+        font-size: 13px !important;
+    }
+
+    .meetingMinutes-item {
+        margin-top: 3px !important;
+        border-radius: 7px !important;
+        font-size: 11px !important;
+    }
+
+    .meetingMinutes-time {
+        display: none !important;
+    }
+
+    .meetingMinutes-title {
+        padding: 3px 5px !important;
+    }
+
+    /* 실시간 회의 */
+    .real-meeting-page {
+        min-height: auto !important;
+        padding: 0 !important;
+        background: transparent !important;
+    }
+
+    .meeting-workspace {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        max-width: none !important;
+    }
+
+    .meeting-form-panel,
+    .recorder-panel {
+        padding: 18px !important;
+        border-radius: var(--app-radius) !important;
+        box-shadow: var(--app-shadow) !important;
+    }
+
+    .status-chip {
+        min-height: 34px !important;
+        font-size: 12px !important;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+    }
+
+    .field-block.wide {
+        grid-column: 1 / -1 !important;
+    }
+
+    .field-block span {
+        font-size: 13px !important;
+    }
+
+    .recorder-panel {
+        gap: 18px !important;
+    }
+
+    .recorder-visual {
+        grid-template-columns: 76px 1fr 76px !important;
+        gap: 10px !important;
+    }
+
+    .image-action {
+        width: 76px !important;
+        height: 76px !important;
+    }
+
+    .image-icon {
+        font-size: 30px !important;
+    }
+
+    .recorder-state strong {
+        font-size: 18px !important;
+    }
+
+    .recorder-state span {
+        font-size: 30px !important;
+    }
+
+    .recording-progress {
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+
+    .complete-btn {
+        width: 100% !important;
+        height: 54px !important;
+        border-radius: 14px !important;
+    }
+
+    .recording-lock {
+        inset: 0 !important;
+    }
+
+    /* 모달/팝업 */
+    .modal-overlay,
+    .image-modal-overlay,
+    .image-modal,
+    .inquiry-modal-backdrop {
+        padding: 12px !important;
+        align-items: flex-end !important;
+    }
+
+    .modal,
+    .login-modal,
+    .inquiry-modal {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: calc(100dvh - 24px) !important;
+        padding: 20px !important;
+        border-radius: 22px !important;
+        overflow-y: auto !important;
+    }
+
+    .modal-buttons {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        margin-top: 18px !important;
+    }
+
+    .selected-date {
+        margin-bottom: 16px !important;
+        font-size: 18px !important;
+    }
+
+    .form-group {
+        margin-bottom: 14px !important;
+    }
+
+    .file-upload-box {
+        align-items: stretch !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        border-radius: 14px !important;
+    }
+
+    .thumbnail-container,
+    .thumbnail {
+        width: 132px !important;
+        height: 132px !important;
+    }
+
+    .inquiry-modal input,
+    .inquiry-modal textarea {
+        min-height: 46px !important;
+        font-size: 16px !important;
+    }
+
+    .inquiry-submit-btn {
+        height: 50px !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .content {
+        padding: 10px !important;
+    }
+
+    .card,
+    .home-page .card,
+    .calendar-container,
+    .meeting-form-panel,
+    .recorder-panel {
+        padding: 14px !important;
+    }
+
+    .home-search-panel {
+        grid-template-columns: 1fr !important;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .recorder-visual {
+        grid-template-columns: 68px 1fr 68px !important;
+    }
+
+    .image-action {
+        width: 68px !important;
+        height: 68px !important;
+    }
+
+    .recorder-state span {
+        font-size: 27px !important;
+    }
+
+    .calendar-container {
+        padding: 12px !important;
+    }
+
+    .calendar-header {
+        grid-template-columns: 44px 1fr 44px !important;
+    }
+
+    .calendar-title-button {
+        font-size: 17px !important;
+    }
+
+    .calendar td {
+        height: 50px !important;
+        font-size: 12px !important;
+    }
+
+    .sidebar-menu {
+        grid-template-columns: 1fr !important;
+    }
+}

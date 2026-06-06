@@ -1,0 +1,281 @@
+.code-manage {
+  width: 100%;
+  padding: 28px;
+  box-sizing: border-box;
+  color: #123524;
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.code-header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.code-action-row,
+.code-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.code-grid {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.code-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: white;
+  border: 1px solid #d8efe2;
+  border-radius: 8px;
+}
+
+.code-panel-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.code-panel-title {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.code-panel-heading p {
+  margin: 5px 0 0;
+  color: #6a8f79;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.code-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.code-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.code-form input,
+.code-form select {
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #cfe8da;
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #123524;
+  background: white;
+  font: inherit;
+}
+
+.code-form input:read-only,
+.code-form select:disabled {
+  color: #6a8f79;
+  background: #f4fbf7;
+  cursor: default;
+}
+
+.code-check {
+  height: 38px;
+  flex-direction: row !important;
+  align-items: center;
+}
+
+.code-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: #03c75a;
+}
+
+.code-form-row {
+  display: grid;
+  gap: 12px;
+}
+
+.code-form-row.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.code-save-btn,
+.code-delete-btn,
+.code-sub-btn,
+.code-cancel-btn {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.code-stacked-btn {
+  width: 54px;
+  height: 44px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0;
+  line-height: 1.05;
+}
+
+.code-save-btn,
+.code-sub-btn {
+  border: 1px solid #0b7a3b;
+  color: white;
+  background: #0b7a3b;
+}
+
+.code-cancel-btn {
+  border: 1px solid #b9e5ca;
+  color: #0b7a3b;
+  background: #f1fbf6;
+}
+
+.code-delete-btn {
+  border: 1px solid #c2410c;
+  color: white;
+  background: #c2410c;
+}
+
+.code-delete-btn:disabled,
+.code-sub-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.code-item-editor {
+  padding: 14px;
+  border: 1px dashed #b9e5ca;
+  border-radius: 8px;
+  background: #f8fffb;
+}
+
+.code-detail-title {
+  color: #0b7a3b;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.code-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.code-list-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px 58px 12px 12px;
+  border: 1px solid #d8efe2;
+  border-radius: 8px;
+  background: #f8fffb;
+  color: #315743;
+  cursor: pointer;
+}
+
+.code-list-item.selected {
+  border-color: #03c75a;
+  background: #e8f7ef;
+}
+
+.code-list-item span {
+  font-weight: 900;
+}
+
+.code-list-item small {
+  color: #6a8f79;
+}
+
+.code-list-item em {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: #0b7a3b;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.code-table-wrap {
+  overflow-x: auto;
+}
+
+.code-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.code-table th,
+.code-table td {
+  padding: 10px;
+  border-bottom: 1px solid #e4f2ea;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.code-table th {
+  color: #315743;
+  background: #f4fbf7;
+}
+
+.code-table tbody tr.selected {
+  background: #e8f7ef;
+}
+
+.code-table tbody tr {
+  cursor: pointer;
+}
+
+.code-table tbody tr:hover {
+  background: #f8fffb;
+}
+
+.code-desc-cell {
+  max-width: 280px;
+  white-space: normal !important;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.code-empty-row {
+  color: #6a8f79;
+  text-align: center !important;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .code-header,
+  .code-action-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .code-grid,
+  .code-form-row.two {
+    grid-template-columns: 1fr;
+  }
+}
