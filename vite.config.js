@@ -26,5 +26,14 @@ export default defineConfig({
         ws: true
       }
     }
+  },
+
+  // CloudType의 외부 접속 도메인을 Vite preview 서버에서 허용한다.
+  preview: {
+    host: '0.0.0.0',
+    port: 3000,
+    allowedHosts: [
+      '.cloudtype.app'
+    ]
   }
 })
