@@ -205,6 +205,23 @@ const filteredAnalysisTypes = computed(() => {
 const loadTemplates = async () => {
   const result = await getApi('/api/templates')
   templates.value = result.success ? result.data || [] : []
+  selectDefaultTemplate()
+}
+
+const selectDefaultTemplate = () => {
+  if (templates.value.length === 0) {
+    resetTemplateForm()
+    return
+  }
+
+  const selectedTemplate = templates.value.find(template => template.id === form.id)
+
+  if (selectedTemplate) {
+    selectTemplate(selectedTemplate)
+    return
+  }
+
+  selectTemplate(templates.value[0])
 }
 
 const loadCodes = async () => {
@@ -287,7 +304,6 @@ const deleteTemplate = async () => {
 
   if (result.success) {
     await loadTemplates()
-    resetTemplateForm()
     await showAlert('삭제 완료', '템플릿이 삭제되었습니다.', 'success')
     return
   }

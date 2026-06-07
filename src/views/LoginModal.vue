@@ -56,9 +56,10 @@
           v-if="!codeRequested"
           type="button"
           class="login-primary-btn"
+          :disabled="requestingCode"
           @click="requestCode"
         >
-          인증코드 받기
+          {{ requestingCode ? '발송 중' : '인증코드 받기' }}
         </button>
 
         <button
@@ -78,6 +79,11 @@
         >
           다시 입력
         </button>
+      </div>
+
+      <div v-if="requestingCode" class="login-progress" aria-live="polite">
+        <div class="login-progress-bar"></div>
+        <span>인증코드를 발송하고 있습니다.</span>
       </div>
 
       <button type="button" class="login-link-btn" @click="switchMode('signup')">
@@ -157,6 +163,7 @@ const emit = defineEmits(['login-success'])
 const email = ref('')
 const code = ref('')
 const codeRequested = ref(false)
+const requestingCode = ref(false)
 const rememberOneDay = ref(false)
 const devCode = ref('')
 const mode = ref('login')
@@ -171,6 +178,7 @@ const resetLoginForm = () => {
   email.value = ''
   code.value = ''
   codeRequested.value = false
+  requestingCode.value = false
   rememberOneDay.value = false
   devCode.value = ''
 }
@@ -204,6 +212,10 @@ const promptSignup = async () => {
 }
 
 const requestCode = async () => {
+  if (requestingCode.value) {
+    return
+  }
+
   if (!email.value) {
     await showAlert('입력 오류', '이메일을 입력해주세요.', 'warning')
     return
@@ -215,6 +227,8 @@ const requestCode = async () => {
   }
 
   try {
+    requestingCode.value = true
+
     const result = await postApi(
       '/api/auth/request-code',
       {
@@ -243,6 +257,8 @@ const requestCode = async () => {
     }
 
     await showError('요청 실패', message, 'error')
+  } finally {
+    requestingCode.value = false
   }
 }
 

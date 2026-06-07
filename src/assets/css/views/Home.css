@@ -277,105 +277,6 @@
   cursor: not-allowed;
 }
 
-.analysis-touch-hint {
-  margin: -2px 0 8px;
-  color: #6a8f79;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.analysis-preview-textarea {
-  cursor: pointer;
-  background: #f8fffb;
-}
-
-.analysis-preview-textarea:focus {
-  outline: none;
-  border-color: #03c75a;
-  box-shadow: 0 0 0 3px rgba(3, 199, 90, 0.12);
-}
-
-.analysis-fullscreen-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: flex;
-  padding: 20px;
-  background: rgba(18, 53, 36, 0.42);
-  backdrop-filter: blur(4px);
-  box-sizing: border-box;
-}
-
-.analysis-fullscreen-panel {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: min(1100px, 100%);
-  height: min(860px, 100%);
-  margin: auto;
-  padding: 22px;
-  background: #ffffff;
-  border: 1px solid #d8efe2;
-  border-radius: 8px;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
-  box-sizing: border-box;
-}
-
-.analysis-fullscreen-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding-right: 42px;
-  margin-bottom: 14px;
-}
-
-.analysis-fullscreen-head p {
-  margin: 0 0 5px;
-  color: #03c75a;
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.analysis-fullscreen-head strong {
-  display: block;
-  color: #123524;
-  font-size: 20px;
-  font-weight: 900;
-}
-
-.analysis-fullscreen-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.analysis-fullscreen-actions .copy-btn,
-.analysis-fullscreen-actions .confirm-btn {
-  min-width: 82px;
-}
-
-.analysis-fullscreen-textarea {
-  flex: 1;
-  width: 100%;
-  min-height: 0;
-  padding: 16px;
-  color: #123524;
-  background: #f7fcf9;
-  border: 1px solid #d8efe2;
-  border-radius: 8px;
-  resize: none;
-  box-sizing: border-box;
-  font-family: inherit;
-  font-size: 14px;
-  line-height: 1.75;
-}
-
-.analysis-fullscreen-textarea:focus {
-  border-color: #03c75a;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(3, 199, 90, 0.12);
-}
-
 .detail-action-row {
   display: flex;
   justify-content: flex-end;
@@ -676,29 +577,6 @@
 
   .subject-save-btn {
     width: 100%;
-  }
-
-  .analysis-fullscreen-overlay {
-    padding: 12px;
-  }
-
-  .analysis-fullscreen-panel {
-    padding: 18px 14px 14px;
-  }
-
-  .analysis-fullscreen-head {
-    flex-direction: column;
-    padding-right: 40px;
-  }
-
-  .analysis-fullscreen-actions {
-    width: 100%;
-  }
-
-  .analysis-fullscreen-actions .copy-btn,
-  .analysis-fullscreen-actions .confirm-btn {
-    flex: 1;
-    min-width: 0;
   }
 
   .detail-action-row {

@@ -24,6 +24,25 @@
           </option>
         </select>
       </div>
+
+      <div class="ai-chart-options">
+        <label class="ai-chart-option">
+          <input
+            v-model="visibleCharts.speaker"
+            type="checkbox"
+            @change="ensureChartSelection('speaker')"
+          />
+          <span>화자별 발언률</span>
+        </label>
+        <label class="ai-chart-option">
+          <input
+            v-model="visibleCharts.repeatedWords"
+            type="checkbox"
+            @change="ensureChartSelection('repeatedWords')"
+          />
+          <span>반복단어사용률</span>
+        </label>
+      </div>
     </section>
 
     <section v-if="!selectedItem" class="ai-chart-empty">
@@ -31,7 +50,7 @@
     </section>
 
     <section v-else class="ai-chart-grid">
-      <div class="ai-chart-panel">
+      <div v-if="visibleCharts.speaker" class="ai-chart-panel">
         <div class="ai-chart-panel-title ai-chart-panel-title-row">
           <span>화자별 발언률</span>
           <button
@@ -70,6 +89,39 @@
 
             <div class="ai-chart-percent">
               {{ speaker.percent }}%
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="visibleCharts.repeatedWords" class="ai-chart-panel">
+        <div class="ai-chart-panel-title">
+          반복단어사용률
+        </div>
+
+        <div v-if="repeatedWordStats.length === 0" class="ai-chart-empty-inline">
+          반복해서 사용된 단어를 찾을 수 없습니다.
+        </div>
+
+        <div v-else class="ai-chart-bars">
+          <div
+            v-for="word in repeatedWordStats"
+            :key="word.text"
+            class="ai-chart-bar-row ai-chart-word-row"
+          >
+            <div class="ai-chart-word-label">
+              {{ word.text }}
+            </div>
+
+            <div class="ai-chart-bar-track">
+              <div
+                class="ai-chart-bar-fill ai-chart-word-fill"
+                :style="{ width: word.barPercent + '%' }"
+              ></div>
+            </div>
+
+            <div class="ai-chart-percent ai-chart-word-percent">
+              {{ word.percent }}% · {{ word.count }}회
             </div>
           </div>
         </div>
@@ -145,7 +197,11 @@ export default {
       transcriptContent: '',
       speakerNames: {},
       saving: false,
-      showTranscriptModal: false
+      showTranscriptModal: false,
+      visibleCharts: {
+        speaker: true,
+        repeatedWords: false
+      }
     }
   },
   computed: {
@@ -167,9 +223,54 @@ export default {
         ...item,
         percent: Math.round((item.amount / total) * 100)
       }))
+    },
+
+    repeatedWordStats() {
+      const words = this.extractWords(this.transcriptContent)
+      const total = words.length
+
+      if (total === 0) {
+        return []
+      }
+
+      const wordMap = new Map()
+
+      words.forEach(word => {
+        wordMap.set(word, (wordMap.get(word) || 0) + 1)
+      })
+
+      const repeatedWords =
+        Array.from(wordMap.entries())
+          .filter(([, count]) => count > 1)
+          .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+          .slice(0, 12)
+
+      const maxCount =
+        repeatedWords.reduce(
+          (max, [, count]) => Math.max(max, count),
+          0
+        )
+
+      return repeatedWords.map(([text, count]) => ({
+        text,
+        count,
+        percent: Math.round((count / total) * 100),
+        barPercent: Math.max(6, Math.round((count / maxCount) * 100))
+      }))
     }
   },
   methods: {
+    ensureChartSelection(chartName) {
+      if (
+        this.visibleCharts.speaker
+        || this.visibleCharts.repeatedWords
+      ) {
+        return
+      }
+
+      this.visibleCharts[chartName] = true
+    },
+
     async loadTranscripts() {
       const result =
         await getApi('/api/meeting-minutes/list')
@@ -238,6 +339,49 @@ export default {
           amount
         }))
         .sort((a, b) => b.amount - a.amount)
+    },
+
+    extractWords(content) {
+      const stopWords = new Set([
+        '그리고',
+        '그런데',
+        '그래서',
+        '그러면',
+        '하지만',
+        '회의',
+        '내용',
+        '부분',
+        '관련',
+        '오늘',
+        '저희',
+        '제가',
+        '우리',
+        '이것',
+        '저것',
+        '그것',
+        '합니다',
+        '했습니다',
+        '있습니다',
+        '됩니다',
+        '있고',
+        '없는',
+        '있는',
+        'the',
+        'and',
+        'for',
+        'you',
+        'that',
+        'this',
+        'with',
+        'from'
+      ])
+
+      return String(content || '')
+        .replace(/^([^:\n]{1,40})\s*:\s*/gm, ' ')
+        .toLowerCase()
+        .match(/[가-힣a-z0-9]{2,}/g)
+        ?.filter(word => !stopWords.has(word))
+        || []
     },
 
     getUpdatedTranscript() {

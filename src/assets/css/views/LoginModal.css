@@ -145,9 +145,54 @@
   background: #03c75a;
 }
 
+.login-primary-btn:disabled,
+.login-secondary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .login-secondary-btn {
   color: #0b7a3b;
   background: #e8f7ef;
+}
+
+.login-progress {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  color: #315743;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.login-progress-bar {
+  position: relative;
+  height: 6px;
+  overflow: hidden;
+  background: #d8f5e4;
+  border-radius: 999px;
+}
+
+.login-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -35%;
+  width: 35%;
+  background: #03c75a;
+  border-radius: inherit;
+  animation: login-progress-move 1s ease-in-out infinite;
+}
+
+@keyframes login-progress-move {
+  0% {
+    left: -35%;
+  }
+
+  100% {
+    left: 100%;
+  }
 }
 
 .login-link-btn {

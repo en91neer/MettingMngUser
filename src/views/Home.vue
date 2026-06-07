@@ -247,16 +247,29 @@
         <label>
           분석요약
         </label>
-        <p class="analysis-touch-hint">
-          분석요약을 터치하면 전체화면에서 복사 및 수정할 수 있습니다.
-        </p>
         <textarea
-          class="message-textarea analysis-preview-textarea"
-          :value="analysisContent"
+          class="message-textarea"
+          v-model="analysisContent"
           rows="30"
-          readonly
-          @click="openAnalysisFullscreen"
         ></textarea>
+      </div>
+
+      <div
+        v-if="isSelectedMeetingMinutesComplete"
+        class="detail-action-row"
+      >
+        <button
+          class="copy-btn"
+          @click="copyAnalysisContent"
+        >
+          복사
+        </button>
+        <button
+          class="confirm-btn"
+          @click="updateAnalysisContent"
+        >
+          수정
+        </button>
       </div>
     </div>
   </div>
@@ -285,51 +298,6 @@
   </div>
 
   <teleport to="body">
-    <div
-      v-if="showAnalysisFullscreen"
-      class="analysis-fullscreen-overlay"
-      @click.self="closeAnalysisFullscreen"
-    >
-      <div class="analysis-fullscreen-panel" @click.stop>
-        <button
-          type="button"
-          class="popup-close-btn"
-          aria-label="팝업 닫기"
-          @click="closeAnalysisFullscreen"
-        >
-          ×
-        </button>
-
-        <div class="analysis-fullscreen-head">
-          <div>
-            <p>분석요약 편집</p>
-            <strong>{{ getAnalysisTypeName(selectedAnalysisType) }}</strong>
-          </div>
-          <div class="analysis-fullscreen-actions">
-            <button
-              type="button"
-              class="copy-btn"
-              @click="copyFullscreenAnalysisContent"
-            >
-              복사
-            </button>
-            <button
-              type="button"
-              class="confirm-btn"
-              @click="updateFullscreenAnalysisContent"
-            >
-              수정
-            </button>
-          </div>
-        </div>
-
-        <textarea
-          v-model="fullscreenAnalysisContent"
-          class="analysis-fullscreen-textarea"
-        ></textarea>
-      </div>
-    </div>
-
     <div
       v-if="openAnalyzeMenuMeetingMinutes"
       class="analyze-modal-overlay"
@@ -466,8 +434,6 @@ export default {
       selectedAnalysisDate: '',
       analysisResults: [],
       analysisContent: '',
-      showAnalysisFullscreen: false,
-      fullscreenAnalysisContent: '',
       startDateSearch: '',
       endDateSearch: '',
       analysisTypeSearch: '전체',
@@ -719,7 +685,6 @@ export default {
       this.selectedMeetingSubject = meetingMinutes.subject || ''
       this.analysisResults = []
       this.analysisContent = ''
-      this.fullscreenAnalysisContent = ''
       this.selectedAnalysisDate = ''
 
       if (this.isAnalyzeComplete(meetingMinutes)) {
@@ -734,7 +699,6 @@ export default {
     /* 상세팝업 닫기 */
     closeDetailModal() {
       this.showDetailModal = false
-      this.showAnalysisFullscreen = false
     },
 
     async updateMeetingSubject() {
@@ -803,7 +767,10 @@ export default {
 
       this.analysisResults =
         result.success && Array.isArray(result.data)
-          ? result.data
+          ? result.data.map(item => ({
+              ...item,
+              content: this.sanitizeAnalysisContent(item.content)
+            }))
           : []
     },
 
@@ -819,7 +786,8 @@ export default {
       )
 
       this.selectedAnalysisDate = selectedResult?.analyzedAt || ''
-      this.analysisContent = selectedResult?.content || ''
+      this.analysisContent =
+        this.sanitizeAnalysisContent(selectedResult?.content || '')
     },
 
     getAnalysisResultByType(analysisType) {
@@ -842,14 +810,38 @@ export default {
             return ''
           }
 
-          if (this.hasAnalysisTitle(result.content, type.name)) {
-            return result.content
+          const content = this.sanitizeAnalysisContent(result.content)
+
+          if (this.hasAnalysisTitle(content, type.name)) {
+            return content
           }
 
-          return '[' + type.name + ']\n\n' + result.content
+          return '[' + type.name + ']\n\n' + content
         })
         .filter(Boolean)
         .join('\n\n')
+    },
+
+    sanitizeAnalysisContent(content) {
+      return this.normalizeSummarySpacing(
+        this.removeConversationTranscript(content)
+      )
+    },
+
+    removeConversationTranscript(content) {
+      return String(content || '')
+        .replace(/\n*\[대화록\][\s\S]*$/m, '')
+        .trim()
+    },
+
+    normalizeSummarySpacing(content) {
+      return String(content || '')
+        .replace(
+          /(^|\n)(\s*(?:#{1,6}\s*)?(?:\*\*)?(핵심|결정|할\s*일|할일|용어\s*설명)(?:\*\*)?\s*:?\s*)\n{2,}/g,
+          '$1$2\n'
+        )
+        .replace(/\n{3,}/g, '\n\n')
+        .trim()
     },
 
     hasAnalysisTitle(content, type) {
@@ -881,7 +873,9 @@ export default {
       }
 
       try {
-        await navigator.clipboard.writeText(this.analysisContent || '')
+        const content = this.sanitizeAnalysisContent(this.analysisContent)
+        this.analysisContent = content
+        await navigator.clipboard.writeText(content)
         await showAlert(
           '내용 복사성공하였습니다.',
           '',
@@ -894,41 +888,6 @@ export default {
           'error'
         )
       }
-    },
-
-    openAnalysisFullscreen() {
-      if (!this.isSelectedMeetingMinutesComplete) {
-        return
-      }
-
-      this.fullscreenAnalysisContent = this.analysisContent || ''
-      this.showAnalysisFullscreen = true
-    },
-
-    closeAnalysisFullscreen() {
-      this.showAnalysisFullscreen = false
-    },
-
-    async copyFullscreenAnalysisContent() {
-      try {
-        await navigator.clipboard.writeText(this.fullscreenAnalysisContent || '')
-        await showAlert(
-          '내용 복사성공하였습니다.',
-          '',
-          'success'
-        )
-      } catch (error) {
-        await showError(
-          '복사 실패',
-          '내용 복사중 오류가 발생했습니다.',
-          'error'
-        )
-      }
-    },
-
-    async updateFullscreenAnalysisContent() {
-      this.analysisContent = this.fullscreenAnalysisContent || ''
-      await this.updateAnalysisContent()
     },
 
     async updateAnalysisContent() {
@@ -945,6 +904,9 @@ export default {
         return
       }
 
+      const content = this.sanitizeAnalysisContent(this.analysisContent)
+      this.analysisContent = content
+
       const result =
         await putApi(
           '/api/meeting-minutes/analysisResult',
@@ -952,20 +914,24 @@ export default {
             fileId: this.selectedMeetingMinutes.fileId,
             analysisType: this.selectedAnalysisType,
             analysisTypeCode: this.selectedAnalysisType,
-            content: this.analysisContent
+            content
           }
         )
 
       if (result.success) {
+        const savedResult = {
+          ...result.data,
+          content: this.sanitizeAnalysisContent(result.data?.content || content)
+        }
         const index =
           this.analysisResults.findIndex(
-            item => (item.analysisTypeCode || item.analysisType) === (result.data.analysisTypeCode || result.data.analysisType)
+            item => (item.analysisTypeCode || item.analysisType) === (savedResult.analysisTypeCode || savedResult.analysisType)
           )
 
         if (index >= 0) {
-          this.analysisResults.splice(index, 1, result.data)
+          this.analysisResults.splice(index, 1, savedResult)
         } else {
-          this.analysisResults.push(result.data)
+          this.analysisResults.push(savedResult)
         }
 
         this.changeAnalysisType()

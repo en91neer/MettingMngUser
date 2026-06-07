@@ -17,6 +17,34 @@
   border-radius: 8px;
 }
 
+.ai-chart-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ai-chart-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 13px;
+  color: #315743;
+  background: #f7fcf9;
+  border: 1px solid #cfe8da;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.ai-chart-option input {
+  width: 16px;
+  height: 16px;
+  accent-color: #03c75a;
+}
+
 .ai-chart-field {
   flex: 1;
   min-width: 0;
@@ -76,7 +104,7 @@
 
 .ai-chart-grid {
   display: grid;
-  grid-template-columns: minmax(360px, 0.8fr) minmax(420px, 1.2fr);
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 18px;
 }
 
@@ -152,6 +180,30 @@
   font-size: 13px;
   font-weight: 900;
   text-align: right;
+}
+
+.ai-chart-word-row {
+  grid-template-columns: 118px minmax(120px, 1fr) 92px;
+}
+
+.ai-chart-word-label {
+  min-width: 0;
+  overflow: hidden;
+  color: #123524;
+  font-size: 13px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-chart-word-fill {
+  background: #2f80ed;
+}
+
+.ai-chart-word-percent {
+  color: #1d5fbf;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 .ai-chart-transcript {
@@ -262,6 +314,15 @@
     flex-direction: column;
   }
 
+  .ai-chart-options {
+    flex-direction: column;
+  }
+
+  .ai-chart-option {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
   .ai-chart-save-btn {
     width: 100%;
   }
@@ -272,6 +333,10 @@
   }
 
   .ai-chart-bar-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-chart-word-row {
     grid-template-columns: 1fr;
   }
 
