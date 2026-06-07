@@ -24,15 +24,6 @@
           </option>
         </select>
       </div>
-
-      <button
-        type="button"
-        class="ai-chart-save-btn"
-        :disabled="!selectedItem || saving"
-        @click="saveTranscript"
-      >
-        저장
-      </button>
     </section>
 
     <section v-if="!selectedItem" class="ai-chart-empty">
@@ -41,8 +32,16 @@
 
     <section v-else class="ai-chart-grid">
       <div class="ai-chart-panel">
-        <div class="ai-chart-panel-title">
-          화자별 발언률
+        <div class="ai-chart-panel-title ai-chart-panel-title-row">
+          <span>화자별 발언률</span>
+          <button
+            type="button"
+            class="ai-chart-save-btn"
+            :disabled="!selectedItem || saving"
+            @click="saveTranscript"
+          >
+            저장
+          </button>
         </div>
 
         <div v-if="speakerStats.length === 0" class="ai-chart-empty-inline">
@@ -85,9 +84,43 @@
           v-model="transcriptContent"
           class="ai-chart-transcript"
           readonly
+          @click="openTranscriptModal"
         ></textarea>
       </div>
     </section>
+
+    <teleport to="body">
+      <div
+        v-if="showTranscriptModal"
+        class="transcript-fullscreen"
+        @click.self="closeTranscriptModal"
+      >
+        <div class="transcript-fullscreen-panel">
+          <button
+            type="button"
+            class="popup-close-btn"
+            aria-label="팝업 닫기"
+            @click="closeTranscriptModal"
+          >
+            ×
+          </button>
+
+          <div class="transcript-fullscreen-head">
+            <strong>전사문 전체보기</strong>
+            <div class="transcript-fullscreen-actions">
+              <button type="button" @click="copyTranscriptContent">
+                복사하기
+              </button>
+            </div>
+          </div>
+          <textarea
+            v-model="transcriptContent"
+            class="transcript-fullscreen-text"
+            readonly
+          ></textarea>
+        </div>
+      </div>
+    </teleport>
   </div>
 </template>
 
@@ -111,7 +144,8 @@ export default {
       selectedItem: null,
       transcriptContent: '',
       speakerNames: {},
-      saving: false
+      saving: false,
+      showTranscriptModal: false
     }
   },
   computed: {
@@ -262,6 +296,35 @@ export default {
         '화자명이 전사문 파일에 반영되었습니다.',
         'success'
       )
+    },
+
+    openTranscriptModal() {
+      if (!this.selectedItem) {
+        return
+      }
+
+      this.showTranscriptModal = true
+    },
+
+    closeTranscriptModal() {
+      this.showTranscriptModal = false
+    },
+
+    async copyTranscriptContent() {
+      try {
+        await navigator.clipboard.writeText(this.transcriptContent || '')
+        await showAlert(
+          '복사 완료',
+          '전사문이 복사되었습니다.',
+          'success'
+        )
+      } catch (error) {
+        await showError(
+          '복사 실패',
+          '전사문 복사 중 오류가 발생했습니다.',
+          'error'
+        )
+      }
     }
   },
   mounted() {

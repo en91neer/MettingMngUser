@@ -25,32 +25,7 @@
         <div class="form-grid">
           <label class="field-block">
             <span>회의 날짜</span>
-            <input v-model="meetingDate" type="text" readonly />
-          </label>
-
-          <label class="field-block">
-            <span>회의 시간</span>
-            <input :value="displayMeetingTime" type="text" readonly />
-          </label>
-
-          <label class="field-block wide">
-            <span>회의주제</span>
-            <input
-              v-model="subject"
-              type="text"
-              placeholder="회의 주제를 입력하세요"
-              :disabled="isRecording || isUploading"
-            />
-          </label>
-
-          <label class="field-block wide">
-            <span>회의 요약</span>
-            <textarea
-              v-model="content"
-              rows="4"
-              placeholder="회의 요약 또는 키워드를 입력하세요"
-              :disabled="isRecording || isUploading"
-            ></textarea>
+            <input :value="displayMeetingDateTime" type="text" readonly />
           </label>
         </div>
       </section>
@@ -179,6 +154,14 @@ const displayMeetingTime = computed(() => {
   }
 
   return formatKoreanTime(meetingTime.value)
+})
+
+const displayMeetingDateTime = computed(() => {
+  if (!meetingDate.value || !meetingTime.value) {
+    return ''
+  }
+
+  return `${meetingDate.value} ${displayMeetingTime.value}`
 })
 
 const elapsedTime = computed(() => {

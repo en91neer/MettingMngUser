@@ -130,6 +130,14 @@
     <div v-if="showModal" class="modal-overlay">
 
       <div class="modal">
+        <button
+          type="button"
+          class="popup-close-btn"
+          aria-label="팝업 닫기"
+          @click="closeModal"
+        >
+          ×
+        </button>
 
         <h3>
           회의정보 입력
@@ -210,22 +218,35 @@
           <button class="confirm-btn" @click="confirmMeetingMinutes">
             저장
           </button>
-
-          <button class="cancel-btn" @click="closeModal">
-            취소
-          </button>
         </div>
       </div>
     </div>
 
     <!-- 이미지 확대 -->
     <div v-if="showImageModal" class="image-modal-overlay" @click="closeImageModal">
+      <button
+        type="button"
+        class="popup-close-btn image-popup-close-btn"
+        aria-label="팝업 닫기"
+        @click.stop="closeImageModal"
+      >
+        ×
+      </button>
       <img :src="imagePreview" class="full-image" />
     </div>
 
     <!-- 등록 상세 -->
     <div v-if="showDetailModal" class="modal-overlay">
       <div class="modal">
+        <button
+          type="button"
+          class="popup-close-btn"
+          aria-label="팝업 닫기"
+          @click="closeMeetingMinutesDetail"
+        >
+          ×
+        </button>
+
         <h3>
           등록된 회의 정보
         </h3>
@@ -249,11 +270,6 @@
           </div>
         </div>
 
-        <div class="modal-buttons">
-          <button class="cancel-btn" @click="closeMeetingMinutesDetail">
-            닫기
-          </button>
-        </div>
       </div>
     </div>
   </div>
@@ -462,6 +478,15 @@ const nextMonth = () => {
   }
 }
 
+const getDateValue = (year, month, day) => {
+  return new Date(year, month, day).setHours(0, 0, 0, 0)
+}
+
+const isFutureDate = (day) => {
+  return getDateValue(currentYear.value, currentMonth.value, day)
+    > getDateValue(todayYear, todayMonth, todayDate)
+}
+
 const toggleMonthPicker = () => {
   pickerYear.value = currentYear.value
   pickerMonth.value = currentMonth.value
@@ -485,9 +510,19 @@ const goToday = () => {
 /* =========================
    날짜 클릭
 ========================= */
-const selectDate = (day) => {
+const selectDate = async (day) => {
 
   if (!day) {
+    return
+  }
+
+  if (isFutureDate(day)) {
+    await showAlert(
+      '등록 불가',
+      '현재일 이후의 날짜에는 회의 자료를 등록할 수 없습니다.',
+      'warning'
+    )
+
     return
   }
 

@@ -106,6 +106,15 @@
           class="code-form code-item-editor"
           @submit.prevent="saveItem"
         >
+          <button
+            type="button"
+            class="popup-close-btn code-editor-close-btn"
+            aria-label="편집 닫기"
+            @click="closeItemEditor"
+          >
+            ×
+          </button>
+
           <div class="code-detail-title">
             {{ itemForm.id ? '개별코드 상세' : '개별코드 등록' }}
           </div>
@@ -174,9 +183,6 @@
               @click="deleteItem(itemForm)"
             >
               삭제
-            </button>
-            <button type="button" class="code-cancel-btn" @click="closeItemEditor">
-              닫기
             </button>
           </div>
         </form>

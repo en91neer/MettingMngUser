@@ -1,7 +1,7 @@
 <template>
   <section v-if="loginEmail" class="account-bar">
     <div class="account-main">
-      <span class="account-avatar">A</span>
+      <span class="account-avatar" :class="avatarClass">{{ avatarIcon }}</span>
       <span class="account-email">{{ loginEmail }}</span>
       <strong class="account-role">{{ roleName }}</strong>
     </div>
@@ -44,6 +44,30 @@ const roleName = computed(() => {
   }
 
   return '무료사용자'
+})
+
+const avatarIcon = computed(() => {
+  if (roleCode.value === 'SUPER_USER') {
+    return '👥'
+  }
+
+  if (roleCode.value === 'PREMIUM_USER') {
+    return '👤'
+  }
+
+  return '👤'
+})
+
+const avatarClass = computed(() => {
+  if (roleCode.value === 'SUPER_USER') {
+    return 'super'
+  }
+
+  if (roleCode.value === 'PREMIUM_USER') {
+    return 'premium'
+  }
+
+  return 'free'
 })
 
 const syncRecordingLock = (event) => {
@@ -154,8 +178,23 @@ onBeforeUnmount(() => {
   border-radius: 10px;
   color: #0f3d2b;
   background: #dff7e9;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 900;
+}
+
+.account-avatar.super {
+  color: #7a4b00;
+  background: #fff3d6;
+}
+
+.account-avatar.premium {
+  color: #0b7a3b;
+  background: #dff7e9;
+}
+
+.account-avatar.free {
+  color: #315743;
+  background: #eef6f1;
 }
 
 .account-email {

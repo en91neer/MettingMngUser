@@ -10,6 +10,7 @@ export const showAlert = async (
     title,
     text,
     icon,
+    showCloseButton: true,
     confirmButtonText: '확인'
   })
 }
@@ -23,6 +24,7 @@ export const showSuccess = async (
     title,
     text,
     icon: 'success',
+    showCloseButton: true,
     confirmButtonText: '확인'
   })
 }
@@ -36,6 +38,7 @@ export const showError = async (
     title,
     text,
     icon: 'error',
+    showCloseButton: true,
     confirmButtonText: '확인'
   })
 
@@ -50,9 +53,9 @@ export const showConfirm = async (
     title,
     html: text,
     icon: 'question',
-    showCancelButton: true,
+    showCloseButton: true,
+    showCancelButton: false,
     confirmButtonText: '확인',
-    cancelButtonText: '취소',
     reverseButtons: true
   })
 }

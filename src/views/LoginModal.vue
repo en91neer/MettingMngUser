@@ -157,7 +157,7 @@ const emit = defineEmits(['login-success'])
 const email = ref('')
 const code = ref('')
 const codeRequested = ref(false)
-const rememberOneDay = ref(true)
+const rememberOneDay = ref(false)
 const devCode = ref('')
 const mode = ref('login')
 const signupForm = ref({
@@ -171,7 +171,7 @@ const resetLoginForm = () => {
   email.value = ''
   code.value = ''
   codeRequested.value = false
-  rememberOneDay.value = true
+  rememberOneDay.value = false
   devCode.value = ''
 }
 
@@ -285,7 +285,17 @@ const verifyCode = async () => {
     emit('login-success', auth)
     resetLoginForm()
   } catch (error) {
-    await promptSignup()
+    const message =
+      error?.response?.data?.message
+      || error?.response?.data
+      || '인증코드 확인 중 오류가 발생했습니다.'
+
+    if (String(message).includes('등록된 사용자가 없습니다')) {
+      await promptSignup()
+      return
+    }
+
+    await showError('로그인 실패', message, 'error')
   }
 }
 

@@ -13,27 +13,18 @@
 
       <!-- 검색 영역 -->
       <div class="home-search-panel">
-        <div class="home-search-field home-search-subject">
-          <label>회의주제</label>
-          <input
-            v-model="subjectSearch"
-            @keyup.enter="loadUsers(true)"
-            placeholder="회의 주제 입력"
-          />
-        </div>
-
         <div class="home-search-field">
-          <label>등록시작일</label>
+          <label><span class="home-search-icon">📅</span>등록시작일</label>
           <input type="date" v-model="startDateSearch" />
         </div>
 
         <div class="home-search-field">
-          <label>등록종료일</label>
+          <label><span class="home-search-icon">📆</span>등록종료일</label>
           <input type="date" v-model="endDateSearch" />
         </div>
 
         <div class="home-search-field">
-          <label>분석유형</label>
+          <label><span class="home-search-icon">✨</span>분석유형</label>
           <select v-model="analysisTypeSearch">
             <option
               v-for="type in searchAnalysisTypes"
@@ -56,30 +47,52 @@
         </div>
       </div>
 
-      <!-- 테이블 -->
-      <div class="table-wrapper">
-        <table v-if="meetingMinutesUser.length > 0" class="user-table home-user-table">
-          <colgroup>
-            <col class="home-col-analyze" />
-            <col class="home-col-title" />
-            <col class="home-col-date" />
-            <col class="home-col-date" />
-            <col class="home-col-delete" />
-          </colgroup>
-          <thead>
-            <tr>
-              <th>분석요청</th>
-              <th>회의주제</th>
-              <th>요청날짜</th>
-              <th>등록날짜</th>
-              <th>삭제</th>
-              <!-- <th>첨부이미지</th> -->
-            </tr>
-          </thead>
+      <!-- 목록 -->
+      <div v-if="meetingMinutesUser.length > 0" class="home-feed-list">
+        <article
+          v-for="meetingMinutes in meetingMinutesUser"
+          :key="meetingMinutes.id"
+          class="home-feed-card"
+          @click="openDetailModal(meetingMinutes)"
+        >
+          <div class="home-feed-main">
+            <div class="home-feed-header">
+              <span class="home-feed-badge">{{ getAnalyzeProgressText(meetingMinutes) }}</span>
+              <button
+                type="button"
+                class="delete-action-btn"
+                @click.stop.prevent="deleteMeetingMinutes(meetingMinutes)"
+              >
+                삭제
+              </button>
+            </div>
 
-          <tbody>
-            <tr v-for="meetingMinutes in meetingMinutesUser" :key="meetingMinutes.id" @click="openDetailModal(meetingMinutes)">
-              <td>
+            <h2 class="home-feed-title">
+              {{ meetingMinutes.subject || '제목 없는 회의' }}
+            </h2>
+
+            <div class="home-feed-meta">
+              <span>분석 {{ formatFriendlyDate(meetingMinutes.createdAt) }}</span>
+              <span>등록 {{ formatFriendlyDate(meetingMinutes.meetingDate) }}</span>
+            </div>
+
+            <div
+              v-if="meetingMinutes.fileId && meetingMinutes.fileId !== '0'"
+              class="analyze-inline-progress home-feed-progress"
+            >
+              <span class="analyze-inline-progress-text">
+                분석 진행률 {{ getAnalyzeProgress(meetingMinutes) }}%
+              </span>
+              <div class="analyze-inline-progress-bar">
+                <div
+                  class="analyze-inline-progress-fill"
+                  :style="{ width: getAnalyzeProgress(meetingMinutes) + '%' }"
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="home-feed-actions">
                 <button
                   v-if="isAnalyzing(meetingMinutes)"
                   type="button"
@@ -96,50 +109,8 @@
                 >
                   AI분석
                 </button>
-                <div
-                  v-if="meetingMinutes.fileId && meetingMinutes.fileId !== '0'"
-                  class="analyze-inline-progress"
-                >
-                  <span class="analyze-inline-progress-text">
-                    {{ getAnalyzeProgress(meetingMinutes) }}%
-                  </span>
-                  <div class="analyze-inline-progress-bar">
-                    <div
-                      class="analyze-inline-progress-fill"
-                      :style="{ width: getAnalyzeProgress(meetingMinutes) + '%' }"
-                    ></div>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <span class="home-table-title" :title="meetingMinutes.subject">
-                  {{ getShortMeetingTitle(meetingMinutes.subject) }}
-                </span>
-              </td>
-              <td>
-                {{ meetingMinutes.createdAt }}
-              </td>
-              <td>
-                {{ meetingMinutes.meetingDate }}
-              </td>
-              <td>
-                <button
-                  type="button"
-                  class="delete-action-btn"
-                  @click.stop.prevent="deleteMeetingMinutes(meetingMinutes)"
-                >
-                  삭제
-                </button>
-              </td>
-              <!-- <td>
-                <a v-if="meetingMinutes.fileId && meetingMinutes.fileId !== '0'" href="#" class="image-link"
-                  @click.stop.prevent="loadImage(meetingMinutes.fileId)">
-                  이미지
-                </a>
-              </td> -->
-            </tr>
-          </tbody>
-        </table>
+          </div>
+        </article>
       </div>
 
       <!-- 데이터 없을 때 -->
@@ -168,6 +139,15 @@
   <div v-if="showDetailModal" class="modal-overlay">
 
     <div class="modal">
+      <button
+        type="button"
+        class="popup-close-btn"
+        aria-label="팝업 닫기"
+        @click="closeDetailModal"
+      >
+        ×
+      </button>
+
       <h3>
         분석 상세 정보
       </h3>
@@ -177,7 +157,21 @@
         <label>
           회의 주제
         </label>
-        <input type="text" :value="selectedMeetingMinutes.subject" readonly />
+        <div class="subject-edit-row">
+          <input
+            type="text"
+            v-model="selectedMeetingSubject"
+            placeholder="회의 주제 입력"
+          />
+          <button
+            type="button"
+            class="confirm-btn subject-save-btn"
+            :disabled="savingSubject"
+            @click="updateMeetingSubject"
+          >
+            {{ savingSubject ? '저장중' : '주제 저장' }}
+          </button>
+        </div>
       </div>
 
       <!-- 회의 날짜 -->
@@ -253,37 +247,30 @@
         <label>
           분석요약
         </label>
+        <p class="analysis-touch-hint">
+          분석요약을 터치하면 전체화면에서 복사 및 수정할 수 있습니다.
+        </p>
         <textarea
-          class="message-textarea"
-          v-model="analysisContent"
+          class="message-textarea analysis-preview-textarea"
+          :value="analysisContent"
           rows="30"
+          readonly
+          @click="openAnalysisFullscreen"
         ></textarea>
-      </div>
-
-      <div class="detail-action-row">
-        <button
-          class="copy-btn"
-          :disabled="!isSelectedMeetingMinutesComplete"
-          @click="copyAnalysisContent"
-        >
-          복사
-        </button>
-        <button
-          class="confirm-btn"
-          :disabled="!isSelectedMeetingMinutesComplete"
-          @click="updateAnalysisContent"
-        >
-          수정
-        </button>
-        <button class="cancel-btn" @click="closeDetailModal">
-          닫기
-        </button>
       </div>
     </div>
   </div>
 
   <!-- 이미지 모달 -->
   <div v-if="showImageModal" class="image-modal" @click="closeImageModal">
+    <button
+      type="button"
+      class="popup-close-btn image-popup-close-btn"
+      aria-label="팝업 닫기"
+      @click.stop="closeImageModal"
+    >
+      ×
+    </button>
     <img :src="imageUrl" class="detail-image" />
   </div>
 
@@ -299,23 +286,84 @@
 
   <teleport to="body">
     <div
-      v-if="openAnalyzeMenuMeetingMinutes"
-      class="analyze-menu"
-      :style="{
-        top: analyzeMenuPosition.top + 'px',
-        left: analyzeMenuPosition.left + 'px'
-      }"
-      @click.stop
+      v-if="showAnalysisFullscreen"
+      class="analysis-fullscreen-overlay"
+      @click.self="closeAnalysisFullscreen"
     >
-      <button
-        v-for="type in analyzeTypes"
-        :key="type.code"
-        type="button"
-        class="analyze-menu-item"
-        @click.stop.prevent="selectAnalyzeType(type)"
-      >
-        {{ type.name }}
-      </button>
+      <div class="analysis-fullscreen-panel" @click.stop>
+        <button
+          type="button"
+          class="popup-close-btn"
+          aria-label="팝업 닫기"
+          @click="closeAnalysisFullscreen"
+        >
+          ×
+        </button>
+
+        <div class="analysis-fullscreen-head">
+          <div>
+            <p>분석요약 편집</p>
+            <strong>{{ getAnalysisTypeName(selectedAnalysisType) }}</strong>
+          </div>
+          <div class="analysis-fullscreen-actions">
+            <button
+              type="button"
+              class="copy-btn"
+              @click="copyFullscreenAnalysisContent"
+            >
+              복사
+            </button>
+            <button
+              type="button"
+              class="confirm-btn"
+              @click="updateFullscreenAnalysisContent"
+            >
+              수정
+            </button>
+          </div>
+        </div>
+
+        <textarea
+          v-model="fullscreenAnalysisContent"
+          class="analysis-fullscreen-textarea"
+        ></textarea>
+      </div>
+    </div>
+
+    <div
+      v-if="openAnalyzeMenuMeetingMinutes"
+      class="analyze-modal-overlay"
+      @click.self="openAnalyzeMenuMeetingMinutes = null"
+    >
+      <div class="analyze-type-modal" @click.stop>
+        <button
+          type="button"
+          class="popup-close-btn"
+          aria-label="팝업 닫기"
+          @click="openAnalyzeMenuMeetingMinutes = null"
+        >
+          ×
+        </button>
+
+        <div class="analyze-type-modal-head">
+          <p>분석유형 선택</p>
+          <strong>{{ openAnalyzeMenuMeetingMinutes.subject || '회의 분석' }}</strong>
+        </div>
+
+        <div class="analyze-type-grid">
+          <button
+            v-for="type in analyzeTypes"
+            :key="type.code"
+            type="button"
+            class="analyze-type-card"
+            @click.stop.prevent="selectAnalyzeType(type)"
+          >
+            <span class="analyze-type-icon">✨</span>
+            <strong>{{ type.name }}</strong>
+          </button>
+        </div>
+
+      </div>
     </div>
   </teleport>
 </template>
@@ -408,6 +456,8 @@ export default {
       showDetailModal: false,
       /* 선택 데이터 */
       selectedMeetingMinutes: {},
+      selectedMeetingSubject: '',
+      savingSubject: false,
       analysisTemplates: [],
       detailAnalysisTypes: [
         { code: '전체', name: '전체' }
@@ -416,7 +466,8 @@ export default {
       selectedAnalysisDate: '',
       analysisResults: [],
       analysisContent: '',
-      subjectSearch: '',
+      showAnalysisFullscreen: false,
+      fullscreenAnalysisContent: '',
       startDateSearch: '',
       endDateSearch: '',
       analysisTypeSearch: '전체',
@@ -432,10 +483,6 @@ export default {
       analyzeProgressMap: {},
       analyzeWebSocket: null,
       openAnalyzeMenuMeetingMinutes: null,
-      analyzeMenuPosition: {
-        top: 0,
-        left: 0
-      },
       analyzeTypes: [
       ]
     }
@@ -531,7 +578,7 @@ export default {
 
     getSearchParams(includePaging = false) {
       const params = {
-        subject: this.subjectSearch,
+        subject: '',
         startDate: this.startDateSearch,
         endDate: this.endDateSearch,
         analysisType: this.analysisTypeSearch
@@ -561,6 +608,39 @@ export default {
       const day = String(date.getDate()).padStart(2, '0')
 
       return year + '-' + month + '-' + day
+    },
+
+    formatFriendlyDate(value) {
+      if (!value) {
+        return '-'
+      }
+
+      const dateText = String(value).replace('T', ' ')
+      const match =
+        dateText.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:\s+(\d{1,2}):(\d{1,2}))?/)
+
+      if (!match) {
+        return value
+      }
+
+      const [, year, month, day, hourText, minuteText] = match
+
+      if (!hourText || !minuteText) {
+        return Number(month) + '월 ' + Number(day) + '일'
+      }
+
+      const hour = Number(hourText)
+      const period = hour >= 12 ? '오후' : '오전'
+      const displayHour = hour % 12 || 12
+
+      return (
+        year + '년 '
+        + Number(month) + '월 '
+        + Number(day) + '일 '
+        + period + ' '
+        + displayHour + ':'
+        + String(minuteText).padStart(2, '0')
+      )
     },
 
     handleWindowScroll() {
@@ -636,8 +716,10 @@ export default {
       this.openAnalyzeMenuMeetingMinutes = null
 
       this.selectedMeetingMinutes = meetingMinutes
+      this.selectedMeetingSubject = meetingMinutes.subject || ''
       this.analysisResults = []
       this.analysisContent = ''
+      this.fullscreenAnalysisContent = ''
       this.selectedAnalysisDate = ''
 
       if (this.isAnalyzeComplete(meetingMinutes)) {
@@ -652,6 +734,62 @@ export default {
     /* 상세팝업 닫기 */
     closeDetailModal() {
       this.showDetailModal = false
+      this.showAnalysisFullscreen = false
+    },
+
+    async updateMeetingSubject() {
+      const subject = String(this.selectedMeetingSubject || '').trim()
+
+      if (!subject) {
+        await showAlert(
+          '입력 확인',
+          '회의 주제를 입력해주세요.',
+          'warning'
+        )
+        return
+      }
+
+      if (!this.selectedMeetingMinutes?.id) {
+        return
+      }
+
+      this.savingSubject = true
+
+      const result =
+        await putApi(
+          '/api/meeting-minutes/subject',
+          {
+            id: this.selectedMeetingMinutes.id,
+            subject
+          }
+        )
+
+      this.savingSubject = false
+
+      if (!result.success) {
+        await showError(
+          '수정 실패',
+          '회의 주제 수정 중 오류가 발생했습니다.',
+          'error'
+        )
+        return
+      }
+
+      this.selectedMeetingMinutes.subject = subject
+      const target =
+        this.meetingMinutesUser.find(
+          item => item.id === this.selectedMeetingMinutes.id
+        )
+
+      if (target) {
+        target.subject = subject
+      }
+
+      await showAlert(
+        '수정 완료',
+        '회의 주제가 수정되었습니다.',
+        'success'
+      )
     },
 
     async loadAnalysisResults(fileId) {
@@ -756,6 +894,41 @@ export default {
           'error'
         )
       }
+    },
+
+    openAnalysisFullscreen() {
+      if (!this.isSelectedMeetingMinutesComplete) {
+        return
+      }
+
+      this.fullscreenAnalysisContent = this.analysisContent || ''
+      this.showAnalysisFullscreen = true
+    },
+
+    closeAnalysisFullscreen() {
+      this.showAnalysisFullscreen = false
+    },
+
+    async copyFullscreenAnalysisContent() {
+      try {
+        await navigator.clipboard.writeText(this.fullscreenAnalysisContent || '')
+        await showAlert(
+          '내용 복사성공하였습니다.',
+          '',
+          'success'
+        )
+      } catch (error) {
+        await showError(
+          '복사 실패',
+          '내용 복사중 오류가 발생했습니다.',
+          'error'
+        )
+      }
+    },
+
+    async updateFullscreenAnalysisContent() {
+      this.analysisContent = this.fullscreenAnalysisContent || ''
+      await this.updateAnalysisContent()
     },
 
     async updateAnalysisContent() {
@@ -978,24 +1151,12 @@ export default {
       }
     },
 
-    toggleAnalyzeMenu(meetingMinutes, event) {
+    toggleAnalyzeMenu(meetingMinutes) {
       if (this.openAnalyzeMenuMeetingMinutes?.fileId === meetingMinutes.fileId) {
         this.openAnalyzeMenuMeetingMinutes = null
         return
       }
 
-      const rect = event.currentTarget.getBoundingClientRect()
-      const menuHeight = 210
-      const gap = 8
-      const hasBottomSpace =
-        window.innerHeight - rect.bottom > menuHeight + gap
-
-      this.analyzeMenuPosition = {
-        top: hasBottomSpace
-          ? rect.bottom + gap
-          : Math.max(gap, rect.top - menuHeight - gap),
-        left: rect.left + (rect.width / 2)
-      }
       this.openAnalyzeMenuMeetingMinutes = meetingMinutes
     },
 
@@ -1191,16 +1352,6 @@ export default {
       }
 
       return '분석중 오류가 발생했습니다.'
-    },
-
-    getShortMeetingTitle(title) {
-      if (!title) {
-        return ''
-      }
-
-      return title.length > 20
-        ? title.slice(0, 20) + '...'
-        : title
     },
 
     isAnalyzing(meetingMinutes) {

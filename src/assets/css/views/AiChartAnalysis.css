@@ -92,6 +92,13 @@
   font-weight: 900;
 }
 
+.ai-chart-panel-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .ai-chart-empty-inline {
   padding: 28px 0;
   color: #6a8f79;
@@ -159,6 +166,84 @@
   box-sizing: border-box;
   font-size: 13px;
   line-height: 1.7;
+  cursor: pointer;
+}
+
+.transcript-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  padding: 20px;
+  background: rgba(18, 53, 36, 0.42);
+  backdrop-filter: blur(4px);
+  box-sizing: border-box;
+}
+
+.transcript-fullscreen-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(1100px, 100%);
+  height: min(860px, 100%);
+  margin: auto;
+  padding: 18px;
+  background: #ffffff;
+  border: 1px solid #d8efe2;
+  border-radius: 8px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+  box-sizing: border-box;
+}
+
+.transcript-fullscreen-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.transcript-fullscreen-head strong {
+  color: #123524;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.transcript-fullscreen-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.transcript-fullscreen-actions button {
+  height: 40px;
+  padding: 0 14px;
+  color: #315743;
+  background: #ffffff;
+  border: 1px solid #cfe8da;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.transcript-fullscreen-actions button:first-child {
+  color: #ffffff;
+  background: #03c75a;
+  border-color: #03c75a;
+}
+
+.transcript-fullscreen-text {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  padding: 16px;
+  color: #123524;
+  background: #f7fcf9;
+  border: 1px solid #d8efe2;
+  border-radius: 8px;
+  resize: none;
+  box-sizing: border-box;
+  font-size: 14px;
+  line-height: 1.75;
 }
 
 @media (max-width: 980px) {
@@ -181,11 +266,33 @@
     width: 100%;
   }
 
+  .ai-chart-panel-title-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .ai-chart-bar-row {
     grid-template-columns: 1fr;
   }
 
   .ai-chart-percent {
     text-align: left;
+  }
+
+  .transcript-fullscreen {
+    padding: 12px;
+  }
+
+  .transcript-fullscreen-panel {
+    padding: 14px;
+  }
+
+  .transcript-fullscreen-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .transcript-fullscreen-actions button {
+    flex: 1;
   }
 }
